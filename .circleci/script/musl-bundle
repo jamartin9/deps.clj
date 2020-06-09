@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+#sudo apt-get update
+#sudo apt-get -y install build-essential dpatch fakeroot devscripts equivs lintian quilt software-properties-common musl-tools
+#sudo add-apt-repository -s "deb http://deb.debian.org/debian stretch main"
+#sudo apt-get update
+
+PROJ_DIR="$(pwd)"
+BUILD_DIR="/tmp/build"
+BUNDLE_DIR="/tmp/bundle"
+
+# clean
+rm -rf ${BUILD_DIR} ${BUNDLE_DIR}
+
+# make dirs
+mkdir -p ${BUNDLE_DIR}/lib ${BUNDLE_DIR}/include ${BUILD_DIR}
+
+# copy system musl
+cp -r /usr/lib/x86_64-linux-musl/* ${BUNDLE_DIR}/lib
+cp -r /usr/include/x86_64-linux-musl/* ${BUNDLE_DIR}/include
+
+# build zlib with musl-gcc
+cd ${BUILD_DIR}
+export CC=musl-gcc
+apt-get source zlib1g-dev
+cd zlib-*
+./configure --static --prefix="${BUNDLE_DIR}"
+make libz.a && make install
+
+# build libstdc++.a
+cd ${BUILD_DIR}
+cp /usr/lib/gcc/x86_64-linux-gnu/6/libstdc++.a ${BUNDLE_DIR}/lib/libstdc++.a # copy libstdc++.a until it builds
+
+#sudo apt-get source libstdc++-6-dev
+#sudo mk-build-deps -i -r libstdc++-6-dev
+#cd ./gcc-6-*
+#fakeroot debian/rules binary
+
+mv ${BUNDLE_DIR} ${PROJ_DIR}

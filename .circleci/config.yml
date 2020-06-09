@@ -119,6 +119,32 @@ jobs:
           name: Release
           command: |
             .circleci/script/release
+      - run:
+          name: Install source, apt and musl tools
+          command: |
+            sudo apt-get update
+            sudo apt-get -y install build-essential dpatch fakeroot devscripts equivs lintian quilt software-properties-common musl-tools
+            sudo add-apt-repository -s "deb http://deb.debian.org/debian stretch main"
+            sudo apt-get update
+      - run:
+          name: Build musl bundle
+          command: |
+            .circleci/script/musl-bundle
+      - run:
+          name: Build musl static binary
+          command: |
+            script/compile --static "-H:UseMuslC=bundle/"
+          no_output_timeout: 30m
+      - run:
+          name: Run tests for musl
+          command: |
+            # remove to test static download
+            rm -rf ~/.deps.clj
+            script/exe_test
+      - run:
+          name: Release static
+          command: |
+            .circleci/script/release -static-musl
       - save_cache:
           paths:
             - ~/.m2

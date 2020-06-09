@@ -10,6 +10,6 @@ cd /tmp/release
 
 ## release binary as zip archive
 
-zip "deps.clj-$VERSION-$DEPS_CLJ_PLATFORM-amd64.zip" deps.exe
+zip "deps.clj-$VERSION-$DEPS_CLJ_PLATFORM-amd64$@.zip" deps.exe
 
 rm deps.exe

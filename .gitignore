@@ -3,3 +3,4 @@
 /deps.exe
 /.cpcache
 /.clj-kondo/.cache
+/bundle

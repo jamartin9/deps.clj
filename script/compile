@@ -29,7 +29,7 @@ lein with-profiles +native-image do clean, uberjar
   "-H:EnableURLProtocols=http,https" \
   "--enable-all-security-services" \
   --no-server \
-  "-J-Xmx3g"
+  "-J-Xmx3g" $@
 
 lein clean
 
